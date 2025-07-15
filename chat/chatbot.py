@@ -1,2 +1,2 @@
 def get_bot_reply(user_input):
-    return "I'm working!"  # ← Just placeholder logic to
+    return f"You said: {user_input}"
