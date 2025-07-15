@@ -1,0 +1,8 @@
+streamlit
+transformers
+torch
+plotly
+pandas
+nltk
+scikit-learn
+cryptography
