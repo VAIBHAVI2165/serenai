@@ -15,9 +15,9 @@ def get_bot_reply(user_input, emotion=None):
     if emotion:
         system_prompt += f" The user appears to be feeling {emotion}. Please respond accordingly."
 
-    # ✅ Use client.chat.completions.create instead of openai.chat...
+    # ✅ Use a valid and accessible model name
     response = client.chat.completions.create(
-        model="gpt-4",
+        model="gpt-4o",  # <-- Updated from "gpt-4"
         messages=[
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_input}
