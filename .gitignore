@@ -5,7 +5,8 @@ __pycache__/
 
 # C extensions
 *.so
-
+.env
+serenai_mood.db
 # Distribution / packaging
 .Python
 build/

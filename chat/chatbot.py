@@ -1,20 +1,24 @@
-# chatbot.py
 import openai
 import os
 from dotenv import load_dotenv
+
 load_dotenv()
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
+def get_bot_reply(user_input, emotion=None):
+    system_prompt = "You are SerenAI, an empathetic AI companion. Respond to the user's messages with emotional intelligence and kindness."
 
-openai.api_key = os.getenv("OPENAI_API_KEY")  # Store in .env or set manually
+    if emotion:
+        system_prompt += f" The user appears to be feeling {emotion}. Please respond in a way that supports this emotional state."
 
-def get_bot_reply(user_input):
     response = openai.ChatCompletion.create(
         model="gpt-4",
         messages=[
-            {"role": "system", "content": "You are an empathetic companion who replies gently and supportively."},
+            {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_input}
         ],
         temperature=0.7,
         max_tokens=150
     )
+
     return response['choices'][0]['message']['content']
