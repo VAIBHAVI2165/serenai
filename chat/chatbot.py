@@ -1,20 +1,22 @@
-import openai
 import os
 from dotenv import load_dotenv
+import openai
 
 # Load API key from .env
 load_dotenv()
-openai.api_key = os.getenv("OPENAI_API_KEY")
+api_key = os.getenv("OPENAI_API_KEY")
+
+# Create OpenAI client instance (✅ SDK v1+ requirement)
+client = openai.OpenAI(api_key=api_key)
 
 def get_bot_reply(user_input, emotion=None):
-    # Empathetic system message
     system_prompt = "You are SerenAI, an empathetic AI companion. Respond to the user's messages with emotional intelligence and kindness."
-    
+
     if emotion:
         system_prompt += f" The user appears to be feeling {emotion}. Please respond accordingly."
 
-    # Create a chat completion (new API format)
-    response = openai.chat.completions.create(
+    # ✅ Use client.chat.completions.create instead of openai.chat...
+    response = client.chat.completions.create(
         model="gpt-4",
         messages=[
             {"role": "system", "content": system_prompt},
