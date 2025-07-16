@@ -1,13 +1,13 @@
 import os
 from dotenv import load_dotenv
-import openai
+from together import Together
 
-# Load API key from .env
+# Load API key
 load_dotenv()
-api_key = os.getenv("OPENAI_API_KEY")
+api_key = os.getenv("TOGETHER_API_KEY")
 
-# Create OpenAI client instance (✅ SDK v1+ requirement)
-client = openai.OpenAI(api_key=api_key)
+# Create Together client
+client = Together(api_key=api_key)
 
 def get_bot_reply(user_input, emotion=None):
     system_prompt = "You are SerenAI, an empathetic AI companion. Respond to the user's messages with emotional intelligence and kindness."
@@ -15,15 +15,13 @@ def get_bot_reply(user_input, emotion=None):
     if emotion:
         system_prompt += f" The user appears to be feeling {emotion}. Please respond accordingly."
 
-    # ✅ Use free-tier model
+    # Send request to Together AI
     response = client.chat.completions.create(
-        model="gpt-3.5-turbo",  # changed to free-tier accessible model
+        model="meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
         messages=[
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_input}
-        ],
-        temperature=0.7,
-        max_tokens=150
+        ]
     )
 
     return response.choices[0].message.content
