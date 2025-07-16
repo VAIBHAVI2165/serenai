@@ -1,8 +1,11 @@
 import streamlit as st
 from chat.chatbot import get_bot_reply
 from emotion.emotion_detector import detect_emotion
-from memory.memory_manager import log_emotion, fetch_mood_history
+from memory.memory_manager import log_emotion, fetch_mood_history, init_db
 from ui.layout import render_ui, mood_plot
+
+# ✅ Initialize DB and create table if not exists
+init_db()
 
 # Set page config
 st.set_page_config(page_title="SerenAI – Your Empathetic AI Companion", page_icon="🌸", layout="wide")

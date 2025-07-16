@@ -7,15 +7,18 @@ DB_FILE = "serenai_mood.db"
 def init_db():
     conn = sqlite3.connect(DB_FILE)
     c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS emotion_log (
-                    id INTEGER PRIMARY KEY,
-                    timestamp TEXT,
-                    emotion TEXT,
-                    confidence REAL,
-                    user_input TEXT
-                )''')
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS emotion_log (
+            id INTEGER PRIMARY KEY,
+            timestamp TEXT,
+            emotion TEXT,
+            confidence REAL,
+            user_input TEXT
+        )
+    ''')
     conn.commit()
     conn.close()
+
 
 def log_emotion(user_input, emotion, confidence):
     conn = sqlite3.connect(DB_FILE)
