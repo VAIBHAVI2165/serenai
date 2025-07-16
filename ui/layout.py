@@ -1,46 +1,27 @@
-import plotly.graph_objects as go
+# ui/layout.py
+import streamlit as st
+import pandas as pd
+import plotly.express as px
 
 def render_ui():
-    import streamlit as st
-    st.title("🌸 SerenAI – Your Empathetic AI Companion")
-    st.write("Let’s explore your emotions and take care of your mind 💖")
+    st.markdown("# 🌸 SerenAI – Your Empathetic AI Companion")
+    st.markdown("Let’s explore your emotions and take care of your mind 💖")
 
 def mood_plot(mood_history):
-    import datetime
     if not mood_history:
         return None
 
-    moods, timestamps = zip(*mood_history)
-    timestamps = [datetime.datetime.strptime(t, "%Y-%m-%d %H:%M") for t in timestamps]
+    mood_to_score = {"sad": 0, "anxious": 1, "calm": 2, "happy": 3, "angry": 4}
+    df = pd.DataFrame(mood_history, columns=["emotion", "timestamp"])
+    df["score"] = df["emotion"].map(mood_to_score)
+    df["timestamp"] = pd.to_datetime(df["timestamp"])
 
-    mood_to_num = {
-        "sad": 1,
-        "anxious": 2,
-        "calm": 3,
-        "happy": 4,
-        "angry": 5
-    }
-
-    y_vals = [mood_to_num.get(mood, 0) for mood in moods]
-
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(
-        x=timestamps,
-        y=y_vals,
-        mode="lines+markers",
-        line=dict(shape='spline', smoothing=1.3, color='purple'),
-        name="Mood"
+    fig = px.line(df, x="timestamp", y="score", text="emotion",
+                  labels={"score": "Mood", "timestamp": "Time"},
+                  title="Mood Over Time")
+    fig.update_traces(mode="lines+markers+text", textposition="top center")
+    fig.update_layout(yaxis=dict(
+        tickvals=[0, 1, 2, 3, 4],
+        ticktext=["sad", "anxious", "calm", "happy", "angry"]
     ))
-
-    fig.update_layout(
-        title="🧠 Mood Over Time",
-        xaxis_title="Timestamp",
-        yaxis=dict(
-            title="Mood",
-            tickmode='array',
-            tickvals=list(mood_to_num.values()),
-            ticktext=list(mood_to_num.keys())
-        )
-    )
-
     return fig

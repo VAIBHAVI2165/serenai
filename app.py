@@ -1,30 +1,43 @@
 import streamlit as st
 from chat.chatbot import get_bot_reply
 from emotion.emotion_detector import detect_emotion
-from memory.memory_manager import log_emotion
+from memory.memory_manager import log_emotion, fetch_mood_history
 from ui.layout import render_ui, mood_plot
 
-# Fake mood history for testing
-mood_history = [
-    ("happy", "2025-07-14 10:00"),
-    ("sad", "2025-07-14 13:00"),
-    ("angry", "2025-07-14 15:00"),
-    ("calm", "2025-07-14 20:00")
-]
+# Set page config
+st.set_page_config(page_title="SerenAI – Your Empathetic AI Companion", page_icon="🌸", layout="wide")
 
+# Render UI
 render_ui()
 
-user_input = st.text_input("You:", "")
-if user_input:
-    emotion = detect_emotion(user_input)
-    reply = get_bot_reply(user_input, emotion)  # ✅ FIXED: passed emotion
+# Create tabs
+tab1, tab2 = st.tabs(["💬 Chat", "📈 Mood Timeline"])
 
-    log_emotion(user_input, emotion)
-    
-    st.write(f"🤖 SerenAI: {reply}")
-    st.write(f"🧠 Detected emotion: {emotion}")
+with tab1:
+    st.subheader("Let's explore your emotions and take care of your mind 💖")
+    user_input = st.text_input("You:", "")
 
-# ✅ Pass mood_history to the plot function
-fig = mood_plot(mood_history)
-if fig:
-    st.plotly_chart(fig)
+    if user_input:
+        # Detect emotion with confidence
+        emotion_label, confidence = detect_emotion(user_input)
+        
+        # Get chatbot reply tailored to emotion
+        reply = get_bot_reply(user_input, emotion_label)
+        
+        # Log into DB with optional notes
+        log_emotion(user_input, emotion_label, confidence)
+        
+        # Display chatbot reply
+        st.markdown(f"🤖 **SerenAI**: {reply}")
+        st.markdown(f"🧠 **Detected Emotion**: _{emotion_label}_ ({confidence * 100:.1f}%)")
+
+with tab2:
+    st.subheader("📊 Mood Over Time")
+
+    # Fetch from SQLite DB
+    mood_history = fetch_mood_history()
+
+    # Plot using Plotly
+    fig = mood_plot(mood_history)
+    if fig:
+        st.plotly_chart(fig, use_container_width=True)
