@@ -1,3 +1,4 @@
+# chat/chatbot.py
 import os
 from dotenv import load_dotenv
 from together import Together
@@ -6,11 +7,11 @@ from together import Together
 load_dotenv()
 api_key = os.getenv("TOGETHER_API_KEY")
 
-# Make sure you raise an error if key is not found
+# Ensure key is present
 if not api_key:
     raise ValueError("TOGETHER_API_KEY not found in environment variables.")
 
-# Create Together client with API key
+# Create Together client
 client = Together(api_key=api_key)
 
 def get_bot_reply(user_input, emotion=None):
