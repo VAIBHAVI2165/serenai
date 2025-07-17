@@ -11,52 +11,6 @@ from ui.layout import render_ui, mood_plot
 # 🌿 Load environment variables
 load_dotenv()
 
-# 🌸 Streamlit Theme & Styling
-st.markdown("""
-    <style>
-    .stApp {
-        background: linear-gradient(135deg, #fceff9, #e0f7fa);
-        background-attachment: fixed;
-        font-family: 'Segoe UI', sans-serif;
-        color: #333;
-    }
-
-    .chat-bubble {
-        padding: 0.8rem 1rem;
-        margin: 0.4rem 0;
-        border-radius: 1rem;
-        max-width: 75%;
-        line-height: 1.4;
-        font-size: 1.05rem;
-    }
-
-    .user {
-        background-color: #f8bbd0;
-        margin-left: auto;
-        color: #000;
-    }
-
-    .bot {
-        background-color: #e1bee7;
-        margin-right: auto;
-        color: #000;
-    }
-
-    .stTextInput > div > div > input {
-        background-color: #fff7fb !important;
-        border: 1px solid #f4c2c2 !important;
-        color: #222 !important;
-        padding: 0.5rem !important;
-        font-size: 1.1rem;
-        border-radius: 0.5rem;
-    }
-
-    h1, h2, h3, .stTabs, .stSubheader {
-        color: #6a1b9a;
-    }
-    </style>
-""", unsafe_allow_html=True)
-
 # 🌱 Init DB
 init_db()
 
@@ -67,47 +21,123 @@ st.set_page_config(
     layout="wide"
 )
 
-# 🌷 Render UI
+# 💄 Optional Styling & Elevated Chat UI
+st.markdown("""
+    <style>
+        .stApp {
+            background: linear-gradient(135deg, #fceff9, #e0f7fa);
+            background-attachment: fixed;
+            font-family: 'Segoe UI', sans-serif;
+            color: #333;
+        }
+
+        h1, h2, h3, .stTabs, .stSubheader {
+            color: #6a1b9a;
+        }
+
+        .chat-bubble {
+            padding: 0.85rem 1.1rem;
+            margin: 0.5rem 0;
+            border-radius: 1rem;
+            max-width: 80%;
+            line-height: 1.5;
+            font-size: 1.07rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .user {
+            background-color: #f8bbd0;
+            margin-left: auto;
+            color: #000;
+        }
+
+        .bot {
+            background-color: #e1bee7;
+            margin-right: auto;
+            color: #000;
+        }
+
+        .emotion-tag {
+            font-size: 0.9rem;
+            margin-left: 0.5rem;
+            color: #6a1b9a;
+        }
+
+        .input-container {
+            position: fixed;
+            bottom: 2.5rem;
+            left: 2.5rem;
+            right: 2.5rem;
+            background: #fff7fb;
+            padding: 0.8rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .input-container input {
+            width: 100%;
+            padding: 0.7rem;
+            font-size: 1.1rem;
+            border-radius: 0.6rem;
+            border: 1px solid #f4c2c2;
+        }
+
+        .stTextInput > div > div > input {
+            background-color: #fff7fb !important;
+            color: #333 !important;
+        }
+
+        #MainMenu, footer {
+            visibility: hidden;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+# 🌷 Render Header
 render_ui()
 
-# 💬 Chat tab
+# 🌸 Tabs
 tab1, tab2 = st.tabs(["💬 Chat", "📈 Mood Timeline"])
 
 with tab1:
     st.subheader("Let's explore your emotions and take care of your mind 💖")
 
-    # Initialize conversation state
+    # Initialize session state for chat history
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
-    # Input box
-    user_input = st.text_input("You:", "", key="chat_input")
-
-    if user_input:
-        # 1. Detect emotion
-        emotion_label, confidence = detect_emotion(user_input)
-
-        # 2. Get reply
-        bot_reply = get_bot_reply(user_input, emotion_label)
-
-        # 3. Log emotion
-        log_emotion(emotion_label, confidence, user_input)
-
-        # 4. Save messages
-        st.session_state.messages.append(("user", user_input))
-        st.session_state.messages.append(("bot", bot_reply))
-        st.session_state.messages.append(("emotion", f"{emotion_label} ({confidence * 100:.1f}%)"))
-
-    # Show conversation
+    # Render chat history
     for role, message in st.session_state.messages:
         if role == "user":
             st.markdown(f"<div class='chat-bubble user'>🧑‍💬 {message}</div>", unsafe_allow_html=True)
         elif role == "bot":
             st.markdown(f"<div class='chat-bubble bot'>🤖 {message}</div>", unsafe_allow_html=True)
         elif role == "emotion":
-            st.markdown(f"<div style='font-size: 0.9rem; margin-left: 0.5rem;'>🧠 <em>Detected Emotion</em>: {message}</div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='emotion-tag'>🧠 <em>Detected Emotion</em>: {message}</div>", unsafe_allow_html=True)
 
-# 📈 Mood timeline
+    # Input bar
+    with st.container():
+        user_input = st.text_input("You:", placeholder="Type a message and press Enter...", key="chat_input")
+
+        if user_input:
+            # 1. Detect emotion
+            emotion_label, confidence = detect_emotion(user_input)
+
+            # 2. Get bot reply
+            bot_reply = get_bot_reply(user_input, emotion_label)
+
+            # 3. Log emotion
+            log_emotion(emotion_label, confidence, user_input)
+
+            # 4. Save chat to session state
+            st.session_state.messages.append(("user", user_input))
+            st.session_state.messages.append(("bot", bot_reply))
+            st.session_state.messages.append(("emotion", f"{emotion_label} ({confidence * 100:.1f}%)"))
+
+            # Clear input field
+            st.experimental_rerun()
+
 with tab2:
     st.subheader("📊 Mood Over Time")
     mood_history = fetch_mood_history()
