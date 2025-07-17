@@ -2,11 +2,15 @@ import os
 from dotenv import load_dotenv
 from together import Together
 
-# Load API key
+# Load API key securely from .env
 load_dotenv()
 api_key = os.getenv("TOGETHER_API_KEY")
 
-# Create Together client
+# Make sure you raise an error if key is not found
+if not api_key:
+    raise ValueError("TOGETHER_API_KEY not found in environment variables.")
+
+# Create Together client with API key
 client = Together(api_key=api_key)
 
 def get_bot_reply(user_input, emotion=None):
@@ -15,7 +19,6 @@ def get_bot_reply(user_input, emotion=None):
     if emotion:
         system_prompt += f" The user appears to be feeling {emotion}. Please respond accordingly."
 
-    # Send request to Together AI
     response = client.chat.completions.create(
         model="meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
         messages=[
