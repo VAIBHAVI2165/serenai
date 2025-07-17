@@ -1,11 +1,16 @@
-# memory/memory_manager.py
+# utils/db_manager.py
 
 import sqlite3
 from datetime import datetime
-import pandas as pd
 
-def init_db():
+# Connect to (or create) the database
+def connect_db():
     conn = sqlite3.connect("db/emotion_log.db")
+    return conn
+
+# Create the emotion_log table (run only once)
+def create_table():
+    conn = connect_db()
     cursor = conn.cursor()
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS emotion_log (
@@ -20,8 +25,9 @@ def init_db():
     conn.commit()
     conn.close()
 
+# Add a new emotion record
 def log_emotion(emotion, intensity, trigger, user_note=""):
-    conn = sqlite3.connect("db/emotion_log.db")
+    conn = connect_db()
     cursor = conn.cursor()
     cursor.execute("""
     INSERT INTO emotion_log (date, emotion, intensity, trigger, user_note)
@@ -29,12 +35,3 @@ def log_emotion(emotion, intensity, trigger, user_note=""):
     """, (datetime.now().isoformat(), emotion, intensity, trigger, user_note))
     conn.commit()
     conn.close()
-
-def fetch_mood_history():
-    try:
-        conn = sqlite3.connect("db/emotion_log.db")
-        df = pd.read_sql_query("SELECT * FROM emotion_log ORDER BY date ASC", conn)
-        conn.close()
-        return df
-    except Exception as e:
-        return None
