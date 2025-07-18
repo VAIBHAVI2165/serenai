@@ -50,6 +50,10 @@ st.markdown("Chat with me and explore your emotions 💬")
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
+# ----- Clear input callback -----
+def clear_input():
+    st.session_state.user_input = ""
+
 # ----- Chat Display -----
 with st.container():
     st.markdown('<div class="chat-container">', unsafe_allow_html=True)
@@ -60,40 +64,42 @@ with st.container():
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ----- Input -----
+# ----- Input Area -----
 st.markdown("### ✍️ Type your message")
 col1, col2 = st.columns([8, 2])
+
 with col1:
-    user_input = st.text_input("Your message:", key="user_input", label_visibility="collapsed", value="")
+    st.text_input("Your message:", key="user_input", label_visibility="collapsed", on_change=clear_input)
+
 with col2:
-    send_clicked = st.button("Send")
+    if st.button("Send"):
+        user_input = st.session_state.user_input.strip()
+        if user_input:
+            with st.spinner("SerenAI is thinking... 💭"):
+                # Emotion detection
+                emotion_data = detect_emotion(user_input)
+                reply = get_bot_reply(user_input, emotion_data)
+                st.session_state.chat_history.append((user_input, reply))
 
-if (send_clicked or user_input.strip()):
-    with st.spinner("SerenAI is thinking... 💭"):
-        emotion_data = detect_emotion(user_input)
-        reply = get_bot_reply(user_input, emotion_data)
-        st.session_state.chat_history.append((user_input, reply))
+                # Safely extract values
+                if isinstance(emotion_data, dict):
+                    emotion = emotion_data.get("label", "neutral")
+                    try:
+                        intensity = float(emotion_data.get("intensity", 0.5))
+                    except (ValueError, TypeError):
+                        intensity = 0.5
+                    trigger = emotion_data.get("trigger", "")
+                else:
+                    emotion = str(emotion_data)
+                    intensity = 0.5
+                    trigger = ""
 
-        # Safely extract values
-        if isinstance(emotion_data, dict):
-            emotion = emotion_data.get("label", "neutral")
-            try:
-                intensity = float(emotion_data.get("intensity", 0.5))
-            except ValueError:
-                intensity = 0.5
-            trigger = emotion_data.get("trigger", "")
-        else:
-            emotion = str(emotion_data)
-            intensity = 0.5
-            trigger = ""
+                try:
+                    log_emotion(emotion, intensity, trigger, user_note=user_input)
+                except Exception as e:
+                    st.warning(f"Error logging emotion: {e}")
 
-        try:
-            log_emotion(emotion, intensity, trigger, user_note=user_input)
-        except Exception as e:
-            st.warning(f"Error logging emotion: {e}")
-
-    st.session_state.user_input = ""  # Clear input
-    st.rerun()
+            st.rerun()  # refresh page
 
 # ----- Mood Timeline -----
 st.markdown("## 🌈 Your Mood Timeline")

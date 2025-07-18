@@ -1,23 +1,6 @@
-# ui/layout.py
-
-import streamlit as st
-import plotly.express as px
-import pandas as pd
-
-def render_ui():
-    # 🌸 Centered, calm title
-    st.markdown("""
-        <div style="text-align: center; padding: 1rem 0;">
-            <h1 style="font-size: 3em; color: #D988BC;">🌸 SerenAI</h1>
-            <h3 style="color: #A569BD;">Your Empathetic AI Companion</h3>
-            <p style="font-size: 1.2em; color: #566573;">
-                Let’s explore your emotions and take care of your mind 💖
-            </p>
-        </div>
-    """, unsafe_allow_html=True)
-
-def mood_plot(df):
+def mood_plot(df=None):
     if df is None or df.empty:
+        st.info("No mood data to show yet. Start logging your emotions to see insights here!")
         return None
 
     df['date'] = pd.to_datetime(df['date'])
@@ -47,4 +30,4 @@ def mood_plot(df):
 
     fig.update_traces(mode="lines+markers", line_shape="spline")
 
-    return fig
+    st.plotly_chart(fig, use_container_width=True)
