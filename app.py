@@ -73,9 +73,14 @@ if (send_clicked or user_input) and user_input.strip():
         emotion = detect_emotion(user_input)
         reply = get_bot_reply(user_input, emotion)
         st.session_state.chat_history.append((user_input, reply))
-        log_emotion(emotion)
-    st.experimental_set_query_params()  # refresh page params without rerun
-    st.rerun()  # this replaces experimental_rerun()
+
+        # Log emotion with default intensity and trigger
+        intensity = "medium"  # You can change this logic later
+        trigger = user_input
+        log_emotion(emotion, intensity, trigger)
+
+    st.experimental_set_query_params()
+    st.rerun()
 
 # ----- Mood Timeline -----
 st.markdown("## 🌈 Your Mood Timeline")
