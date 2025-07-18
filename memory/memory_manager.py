@@ -21,17 +21,31 @@ def init_db():
     conn.close()
 
 def log_emotion(emotion, intensity=None, trigger=None, user_note=None):
-    conn = sqlite3.connect("db/emotion_log.db")
-    cursor = conn.cursor()
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
 
-    cursor.execute("""
-        INSERT INTO emotion_log (date, emotion, intensity, trigger, user_note)
-        VALUES (?, ?, ?, ?, ?)
-    """, (datetime.now().strftime("%Y-%m-%d %H:%M:%S"), emotion, intensity, trigger, user_note))
+        # Safely convert intensity to float or set to None
+        try:
+            intensity_val = float(intensity) if intensity is not None else None
+        except ValueError:
+            intensity_val = None
 
-    conn.commit()
-    conn.close()
+        cursor.execute("""
+            INSERT INTO emotion_log (date, emotion, intensity, trigger, user_note)
+            VALUES (?, ?, ?, ?, ?)
+        """, (
+            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            emotion,
+            intensity_val,
+            trigger,
+            user_note
+        ))
 
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print("Error logging emotion:", e)
 
 def fetch_mood_history():
     try:
@@ -39,5 +53,6 @@ def fetch_mood_history():
         df = pd.read_sql_query("SELECT * FROM emotion_log ORDER BY date ASC", conn)
         conn.close()
         return df
-    except Exception:
+    except Exception as e:
+        print("Error fetching mood history:", e)
         return None
