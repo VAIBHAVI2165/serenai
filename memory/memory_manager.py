@@ -20,28 +20,18 @@ def init_db():
     conn.commit()
     conn.close()
 
-def log_emotion(emotion, intensity=None, trigger=None, user_note=""):
-    # Sanitize values
-    emotion = str(emotion)
-    intensity = float(intensity) if intensity is not None else None
-    trigger = str(trigger) if trigger is not None else ""
-    user_note = str(user_note)
-
-    # Insert into database
-    conn = sqlite3.connect(DB_PATH)
+def log_emotion(emotion, intensity=None, trigger=None, user_note=None):
+    conn = sqlite3.connect("db/emotion_log.db")
     cursor = conn.cursor()
+
     cursor.execute("""
-    INSERT INTO emotion_log (date, emotion, intensity, trigger, user_note)
-    VALUES (?, ?, ?, ?, ?)
-    """, (
-        datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        emotion,
-        intensity,
-        trigger,
-        user_note
-    ))
+        INSERT INTO emotion_log (date, emotion, intensity, trigger, user_note)
+        VALUES (?, ?, ?, ?, ?)
+    """, (datetime.now().strftime("%Y-%m-%d %H:%M:%S"), emotion, intensity, trigger, user_note))
+
     conn.commit()
     conn.close()
+
 
 def fetch_mood_history():
     try:
