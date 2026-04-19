@@ -1,36 +1,48 @@
-# 🌸 SerenAI – Your Empathetic AI Companion
+# 🌸 SerenAI – Your Emotionally Aware AI Companion
 
-SerenAI is a privacy-focused, emotion-aware AI chatbot designed to help users understand and manage their mental health. Built using OpenAI's GPT, it detects emotional tones in your messages and responds with kindness, support, and insight.
+SerenAI is a privacy-focused, emotionally intelligent AI chatbot designed to understand your feelings and respond like a thoughtful human companion.  
+It runs **fully locally using Ollama (phi3)**, ensuring your data stays on your machine.
 
 ---
 
 ## 💡 Features
 
-- 💬 **Empathetic Chatbot** – Replies based on your emotional state
-- 🧠 **Emotion Detection** – Real-time mood tagging using NLP
-- 📈 **Mood Timeline** – Visual mood tracking with Plotly graphs
-- 💾 **Local Data Storage** – SQLite with encryption support
-- 🔐 **Private by Default** – Data stays on your machine
+💬 **Smart Chatbot**  
+- Natural, human-like conversations using local LLM (phi3)
+
+🧠 **Emotion Detection**  
+- Detects user mood in real-time using NLP models
+
+📈 **Mood Tracking**  
+- Visual timeline of emotional patterns
+
+💾 **Memory System**  
+- Stores emotional context locally using SQLite
+
+🔐 **Privacy First**  
+- No cloud API required  
+- Runs completely offline with Ollama
+
+🎀 **Whimsical UI**  
+- Soft, aesthetic interface designed for comfort and calm interaction
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Feature             | Tools Used |
-|---------------------|------------|
-| Chatbot             | OpenAI GPT-4, `openai` |
-| Emotion Detection   | Transformers, `j-hartmann/emotion-roberta` |
-| Visualization       | Plotly, Pandas |
-| UI                  | Streamlit |
-| Memory & Storage    | SQLite3, dotenv |
-| Security            | `.env`, `.gitignore` |
+| Feature            | Tools Used                          |
+|------------------|-----------------------------------|
+| Chatbot           | Ollama (phi3)                     |
+| Emotion Detection | Transformers (HuggingFace)        |
+| UI                | Streamlit                         |
+| Database          | SQLite3                           |
+| Visualization     | Plotly, Pandas                    |
 
 ---
 
 ## 🚀 Run Locally
 
-1. **Clone the repo**
-
+### 1. Clone the repo
 ```bash
-git clone https://github.com/your-username/serenAI.git
+git clone https://github.com/VAIBHAVI2165/serenai.git
 cd serenAI
